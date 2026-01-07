@@ -1,0 +1,16 @@
+{
+  "name": "dragon-ball-beyond-legacy",
+  "version": "1.0.0",
+  "description": "A 2D tile-based Dragon Ball inspired game",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": ["game", "dragon-ball", "2d", "tile-based", "rpg"],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}

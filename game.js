@@ -1,806 +1,745 @@
-// Game State
-const gameState = {
-    screen: 'start',
-    gameRunning: false,
-    player: null,
-    enemies: [],
-    beams: [],
-    particles: [],
-    gameTime: 0,
-    isMobile: false
-};
-
-// Class Data
-const classes = {
-    saiyan: {
-        name: 'SAIYAN',
-        color: '#ff3300',
-        power: 1000,
-        health: 100,
-        ki: 100,
-        speed: 5,
-        description: 'Warrior race with incredible power growth. Can transform into Super Saiyan forms.'
-    },
-    human: {
-        name: 'HUMAN',
-        color: '#0066ff',
-        power: 800,
-        health: 90,
-        ki: 120,
-        speed: 6,
-        description: 'Adaptable fighters with strong techniques and rapid learning ability.'
-    },
-    namekian: {
-        name: 'NAMEKIAN',
-        color: '#00cc66',
-        power: 900,
-        health: 120,
-        ki: 90,
-        speed: 4,
-        description: 'Regenerative abilities and stretchy limbs. Can create objects and heal.'
-    },
-    android: {
-        name: 'ANDROID',
-        color: '#666666',
-        power: 950,
-        health: 110,
-        ki: 999,
-        speed: 5,
-        description: 'Infinite energy, no Ki drain. Can absorb energy and has high durability.'
-    },
-    frieza: {
-        name: 'FRIEZA',
-        color: '#9900ff',
-        power: 1100,
-        health: 95,
-        ki: 110,
-        speed: 5,
-        description: 'Natural power and multiple transformation forms. Can survive in space.'
-    }
-};
-
-// DOM Elements
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-
-// Initialize Game
-function init() {
-    console.log('Game initializing...');
-    setupCanvas();
-    setupEventListeners();
-    updateClassInfo('saiyan');
-    
-    // Check if mobile
-    gameState.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (gameState.isMobile) {
-        document.getElementById('mobile-controls').classList.remove('hidden');
-        setupMobileControls();
-    }
-    
-    // Start game loop
-    gameLoop();
-    console.log('Game initialized successfully');
+/* style.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
 }
 
-function setupCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a0a2a, #1a1a40);
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-function setupEventListeners() {
-    console.log('Setting up event listeners...');
-    
-    // Class selection
-    document.querySelectorAll('.class-option').forEach(option => {
-        option.addEventListener('click', function() {
-            document.querySelectorAll('.class-option').forEach(o => o.classList.remove('active'));
-            this.classList.add('active');
-            const selectedClass = this.dataset.class;
-            updateClassInfo(selectedClass);
-        });
-    });
-    
-    // Start game button
-    const startButton = document.getElementById('start-button');
-    if (startButton) {
-        console.log('Start button found, adding click listener');
-        startButton.addEventListener('click', startGame);
-    } else {
-        console.error('Start button not found!');
-    }
-    
-    // Restart button
-    const restartButton = document.getElementById('restart-btn');
-    if (restartButton) {
-        restartButton.addEventListener('click', restartGame);
-    }
-    
-    // Pause button
-    const pauseButton = document.getElementById('pause-btn');
-    if (pauseButton) {
-        pauseButton.addEventListener('click', togglePause);
-    }
-    
-    // Keyboard controls
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-    
-    console.log('Event listeners set up');
+#game-container {
+    width: 100%;
+    max-width: 1000px;
+    height: 90vh;
+    position: relative;
+    background: rgba(0, 0, 30, 0.9);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0, 150, 255, 0.5);
+    border: 3px solid #00a8ff;
 }
 
-function setupMobileControls() {
-    console.log('Setting up mobile controls...');
-    
-    // Movement buttons
-    ['up', 'down', 'left', 'right'].forEach(dir => {
-        const btn = document.getElementById(`btn-${dir}`);
-        if (btn) {
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (gameState.player) {
-                    gameState.player[`move${dir.charAt(0).toUpperCase() + dir.slice(1)}`] = true;
-                }
-            });
-            
-            btn.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                if (gameState.player) {
-                    gameState.player[`move${dir.charAt(0).toUpperCase() + dir.slice(1)}`] = false;
-                }
-            });
-        }
-    });
-    
-    // Action buttons
-    const chargeBtn = document.getElementById('btn-charge');
-    if (chargeBtn) {
-        chargeBtn.addEventListener('touchstart', () => {
-            if (gameState.player) gameState.player.isCharging = true;
-        });
-        
-        chargeBtn.addEventListener('touchend', () => {
-            if (gameState.player) gameState.player.isCharging = false;
-        });
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Start Screen */
+.title-container {
+    text-align: center;
+    margin-bottom: 30px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.game-title {
+    font-size: 3.5em;
+    color: #ffcc00;
+    text-shadow: 0 0 20px #ff9900, 0 0 40px #ff5500;
+    letter-spacing: 5px;
+    margin-bottom: 5px;
+    font-weight: 900;
+}
+
+.game-subtitle {
+    font-size: 1.5em;
+    color: #00ccff;
+    text-shadow: 0 0 10px #0088cc;
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+.logo {
+    margin: 20px 0;
+}
+
+.db-logo {
+    font-size: 4em;
+    color: #ff3333;
+    text-shadow: 0 0 15px #ff0000;
+    animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* Character Creation */
+#character-creation {
+    width: 90%;
+    max-width: 800px;
+    background: rgba(0, 20, 40, 0.8);
+    padding: 25px;
+    border-radius: 15px;
+    border: 2px solid #00a8ff;
+}
+
+.input-group {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+#player-name {
+    width: 100%;
+    max-width: 400px;
+    padding: 15px;
+    font-size: 1.2em;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid #00ccff;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+#player-name:focus {
+    outline: none;
+    box-shadow: 0 0 15px #00ccff;
+}
+
+.input-hint {
+    font-size: 0.9em;
+    color: #88ccff;
+    margin-top: 5px;
+}
+
+.class-selection {
+    margin-bottom: 30px;
+}
+
+.class-selection h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffcc00;
+    font-size: 1.5em;
+}
+
+.class-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.class-option {
+    flex: 1;
+    min-width: 200px;
+    max-width: 250px;
+    background: rgba(30, 30, 60, 0.8);
+    border: 2px solid #444488;
+    border-radius: 10px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.class-option:hover {
+    transform: translateY(-5px);
+    border-color: #00ccff;
+    box-shadow: 0 5px 15px rgba(0, 200, 255, 0.3);
+}
+
+.class-option.selected {
+    border-color: #ffcc00;
+    background: rgba(50, 50, 30, 0.8);
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+}
+
+.class-icon {
+    font-size: 2.5em;
+    color: #00ccff;
+    margin-bottom: 10px;
+}
+
+.class-option h4 {
+    color: #ffcc00;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.class-option p {
+    color: #aaccff;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+    min-height: 40px;
+}
+
+.stats {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.8em;
+    color: #88ff88;
+}
+
+.btn-start {
+    display: block;
+    margin: 20px auto;
+    padding: 15px 40px;
+    font-size: 1.2em;
+    background: linear-gradient(135deg, #ff3300, #ff9900);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.btn-start:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 102, 0, 0.7);
+}
+
+.controls-info {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.9em;
+    color: #88ccff;
+    background: rgba(0, 20, 40, 0.5);
+    padding: 15px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 800px;
+}
+
+/* Game Screen */
+.canvas-container {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 150px);
+}
+
+#game-canvas {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a2a3a, #0a1a2a);
+    border-radius: 10px;
+    border: 2px solid #00a8ff;
+}
+
+/* Mobile Controls */
+#mobile-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: none;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.d-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 5px;
+    width: 150px;
+    height: 150px;
+}
+
+.d-pad div {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    color: white;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.d-pad-top { grid-column: 2; grid-row: 1; }
+.d-pad-left { grid-column: 1; grid-row: 2; }
+.d-pad-center { grid-column: 2; grid-row: 2; background: transparent !important; border: none !important; }
+.d-pad-right { grid-column: 3; grid-row: 2; }
+.d-pad-bottom { grid-column: 2; grid-row: 3; }
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.action-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(255, 100, 0, 0.8);
+    border: 3px solid rgba(255, 200, 0, 0.9);
+    color: white;
+    font-size: 1.8em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:active {
+    transform: scale(0.9);
+    background: rgba(255, 150, 0, 0.9);
+}
+
+/* HUD */
+#hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 2px solid #00a8ff;
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.player-name-display {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+.player-class-display {
+    font-size: 0.9em;
+    color: #00ccff;
+}
+
+.power-level {
+    text-align: right;
+}
+
+.power-label {
+    color: #ff6666;
+    font-size: 0.9em;
+}
+
+.power-value {
+    font-size: 1.4em;
+    color: #ffcc00;
+    font-weight: bold;
+    text-shadow: 0 0 10px #ff9900;
+}
+
+.hud-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.health-bar-container, .ki-bar-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: 2px solid #ff3333;
+}
+
+.ki-bar-container {
+    border-color: #00ccff;
+}
+
+.bar-label {
+    font-weight: bold;
+    color: white;
+    min-width: 30px;
+}
+
+.health-bar, .ki-bar {
+    flex: 1;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.health-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ff0000, #ff9900);
+    border-radius: 10px;
+    transition: width 0.3s;
+}
+
+.ki-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #0066ff, #00ccff);
+    border-radius: 10px;
+    transition: width 0.3s;
+}
+
+.health-text, .ki-text {
+    min-width: 70px;
+    text-align: right;
+    font-weight: bold;
+}
+
+.health-text {
+    color: #ff9999;
+}
+
+.ki-text {
+    color: #88ccff;
+}
+
+.hud-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.dragon-balls {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: 2px solid #ffcc00;
+}
+
+.db-hint {
+    font-size: 0.9em;
+    color: #ffcc00;
+    margin-bottom: 5px;
+}
+
+.db-icons {
+    display: flex;
+    gap: 5px;
+}
+
+.db-icon {
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8em;
+}
+
+.hud-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 100, 200, 0.8);
+    border: 2px solid #00a8ff;
+    color: white;
+    font-size: 1.2em;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.3s;
+}
+
+.hud-btn:hover {
+    background: rgba(0, 150, 255, 0.9);
+    transform: scale(1.1);
+}
+
+/* Combat Log */
+#combat-log {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 300px;
+    height: 150px;
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 10px;
+    border: 2px solid #ff9900;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.log-header {
+    background: rgba(255, 102, 0, 0.9);
+    color: white;
+    padding: 5px 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.log-content {
+    height: calc(100% - 30px);
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 0.85em;
+    color: #ccccff;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.log-content div {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Menu Screens */
+.menu-container {
+    background: linear-gradient(135deg, #0a1a2a, #1a2a4a);
+    padding: 30px;
+    border-radius: 15px;
+    border: 3px solid #00a8ff;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(0, 100, 255, 0.5);
+}
+
+.menu-container h2 {
+    color: #ffcc00;
+    margin-bottom: 25px;
+    font-size: 2.2em;
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+}
+
+.menu-player-info {
+    background: rgba(0, 30, 60, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    text-align: left;
+    display: inline-block;
+}
+
+.menu-player-info div {
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.menu-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.menu-btn {
+    padding: 15px 25px;
+    background: linear-gradient(135deg, #0066cc, #00a8ff);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.menu-btn:hover {
+    transform: translateX(10px);
+    background: linear-gradient(135deg, #0088ff, #00ccff);
+    box-shadow: 0 5px 15px rgba(0, 200, 255, 0.4);
+}
+
+.menu-btn i {
+    width: 25px;
+    text-align: center;
+}
+
+.exit-btn {
+    background: linear-gradient(135deg, #cc3300, #ff6600) !important;
+}
+
+.exit-btn:hover {
+    background: linear-gradient(135deg, #ff5500, #ff8800) !important;
+}
+
+.back-btn {
+    background: linear-gradient(135deg, #666666, #999999) !important;
+}
+
+.controls-list {
+    background: rgba(0, 30, 60, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.control-key {
+    color: #ffcc00;
+    font-weight: bold;
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.control-desc {
+    color: #ccccff;
+}
+
+.about-content {
+    background: rgba(0, 30, 60, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.about-content h3 {
+    color: #ffcc00;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.about-content p {
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.about-content ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.about-content li {
+    margin-bottom: 8px;
+    color: #88ccff;
+}
+
+.github-note {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #ffcc00;
+    border: 2px solid #ffcc00;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #game-container {
+        height: 100vh;
+        border-radius: 0;
+        border: none;
     }
     
-    const attackBtn = document.getElementById('btn-attack');
-    if (attackBtn) {
-        attackBtn.addEventListener('touchstart', () => {
-            if (gameState.player) gameState.player.attack();
-        });
+    .game-title {
+        font-size: 2.5em;
     }
     
-    const transformBtn = document.getElementById('btn-transform');
-    if (transformBtn) {
-        transformBtn.addEventListener('touchstart', () => {
-            if (gameState.player) gameState.player.transform();
-        });
+    .class-options {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .class-option {
+        max-width: 300px;
+        min-width: 250px;
+    }
+    
+    #mobile-controls {
+        display: flex;
+    }
+    
+    #combat-log {
+        width: 200px;
+        height: 120px;
+        font-size: 0.8em;
+    }
+    
+    .hud-bottom {
+        flex-wrap: wrap;
+    }
+    
+    .dragon-balls {
+        order: -1;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .hud-right {
+        width: 100%;
+        justify-content: space-between;
     }
 }
 
-function updateClassInfo(className) {
-    const classData = classes[className];
-    document.getElementById('class-title').textContent = classData.name;
-    document.getElementById('class-desc').textContent = classData.description;
-    document.getElementById('stat-power').textContent = classData.power.toLocaleString();
-    document.getElementById('stat-health').textContent = classData.health;
-    document.getElementById('stat-ki').textContent = classData.ki === 999 ? '∞' : classData.ki;
-}
-
-function showScreen(screenName) {
-    console.log(`Showing screen: ${screenName}`);
-    gameState.screen = screenName;
+@media (max-width: 480px) {
+    .game-title {
+        font-size: 2em;
+    }
     
-    // Hide all screens
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-    });
+    .class-option {
+        min-width: 200px;
+        padding: 15px;
+    }
     
-    // Show selected screen
-    const screen = document.getElementById(`${screenName}-screen`);
-    if (screen) {
-        screen.classList.add('active');
-    } else {
-        console.error(`Screen ${screenName} not found!`);
+    .d-pad {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .action-btn {
+        width: 60px;
+        height: 60px;
+    }
+    
+    #combat-log {
+        display: none;
     }
 }
-
-// Start Game
-function startGame() {
-    console.log('Starting game...');
-    
-    const playerName = document.getElementById('player-name').value.trim() || 'GOKU';
-    const selectedClassElement = document.querySelector('.class-option.active');
-    
-    if (!selectedClassElement) {
-        console.error('No class selected!');
-        return;
-    }
-    
-    const selectedClass = selectedClassElement.dataset.class;
-    
-    // Create player
-    gameState.player = new Player(playerName, selectedClass);
-    gameState.enemies = [];
-    gameState.beams = [];
-    gameState.particles = [];
-    gameState.gameRunning = true;
-    gameState.gameTime = 0;
-    
-    // Update HUD
-    document.getElementById('hud-player-name').textContent = gameState.player.name;
-    document.getElementById('hud-player-class').textContent = classes[selectedClass].name;
-    updateHUD();
-    
-    // Spawn initial enemies
-    spawnEnemy();
-    spawnEnemy();
-    
-    showScreen('game');
-    console.log('Game started! Player:', gameState.player);
-}
-
-// Player Class
-class Player {
-    constructor(name, playerClass) {
-        this.name = name;
-        this.playerClass = playerClass;
-        const classData = classes[playerClass];
-        
-        // Stats
-        this.power = classData.power;
-        this.maxHealth = classData.health;
-        this.health = this.maxHealth;
-        this.maxKi = classData.ki;
-        this.ki = this.maxKi;
-        this.speed = classData.speed;
-        this.color = classData.color;
-        this.level = 1;
-        
-        // Position
-        this.x = canvas.width / 2;
-        this.y = canvas.height / 2;
-        this.width = 40;
-        this.height = 60;
-        
-        // State
-        this.isCharging = false;
-        this.isTransformed = false;
-        this.moveUp = false;
-        this.moveDown = false;
-        this.moveLeft = false;
-        this.moveRight = false;
-        
-        // Combat
-        this.attackCooldown = 0;
-        this.enemiesDefeated = 0;
-    }
-    
-    update() {
-        // Movement
-        if (this.moveUp && this.y > 50) this.y -= this.speed;
-        if (this.moveDown && this.y < canvas.height - 50) this.y += this.speed;
-        if (this.moveLeft && this.x > 50) this.x -= this.speed;
-        if (this.moveRight && this.x < canvas.width - 50) this.x += this.speed;
-        
-        // Charging
-        if (this.isCharging && this.ki < this.maxKi) {
-            this.ki += 0.5;
-            this.power += 5;
-            createParticles(this.x, this.y, 2, this.color);
-        }
-        
-        // Regenerate ki (except for Android)
-        if (!this.isCharging && this.ki < this.maxKi && this.playerClass !== 'android') {
-            this.ki += 0.1;
-        }
-        
-        // Attack cooldown
-        if (this.attackCooldown > 0) {
-            this.attackCooldown--;
-        }
-        
-        // Update HUD
-        updateHUD();
-    }
-    
-    attack() {
-        if (this.attackCooldown === 0 && this.ki >= 10) {
-            const beam = {
-                x: this.x,
-                y: this.y,
-                vx: 8,
-                vy: 0,
-                width: 12,
-                height: 6,
-                damage: 15 + (this.isTransformed ? 10 : 0),
-                color: this.color,
-                owner: 'player'
-            };
-            
-            gameState.beams.push(beam);
-            this.ki -= 10;
-            this.attackCooldown = 20;
-            
-            // Auto-target nearest enemy
-            let targetEnemy = null;
-            let minDistance = 300;
-            
-            gameState.enemies.forEach(enemy => {
-                const dx = enemy.x - this.x;
-                const dy = enemy.y - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    targetEnemy = enemy;
-                }
-            });
-            
-            // Aim at enemy if found
-            if (targetEnemy) {
-                const dx = targetEnemy.x - this.x;
-                const dy = targetEnemy.y - this.y;
-                const angle = Math.atan2(dy, dx);
-                beam.vx = Math.cos(angle) * 8;
-                beam.vy = Math.sin(angle) * 8;
-            }
-        }
-    }
-    
-    transform() {
-        if (!this.isTransformed && this.ki >= 40) {
-            this.isTransformed = true;
-            this.ki -= 40;
-            this.power *= 2;
-            this.speed *= 1.5;
-            createParticles(this.x, this.y, 20, '#ffcc00');
-        }
-    }
-    
-    takeDamage(damage) {
-        this.health -= damage;
-        if (this.health <= 0) {
-            this.health = 0;
-            gameOver();
-        }
-        updateHUD();
-    }
-    
-    draw() {
-        // Draw aura if charging or transformed
-        if (this.isCharging || this.isTransformed) {
-            const auraSize = this.isTransformed ? 25 : 15;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.width + auraSize, 0, Math.PI * 2);
-            const gradient = ctx.createRadialGradient(
-                this.x, this.y, this.width,
-                this.x, this.y, this.width + auraSize
-            );
-            gradient.addColorStop(0, this.color + 'ff');
-            gradient.addColorStop(1, this.color + '00');
-            ctx.fillStyle = gradient;
-            ctx.fill();
-        }
-        
-        // Draw body
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
-        
-        // Draw face
-        ctx.fillStyle = '#ffcc99';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y - this.height/2 - 10, 15, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Draw name
-        ctx.font = '16px Orbitron';
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-        ctx.fillText(this.name, this.x, this.y - this.height/2 - 30);
-    }
-}
-
-// Enemy Class
-class Enemy {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.width = 40;
-        this.height = 60;
-        this.color = '#00cc66';
-        this.health = 60;
-        this.maxHealth = 60;
-        this.speed = 2;
-        this.power = 500;
-        this.attackCooldown = 0;
-        
-        // AI
-        this.targetX = x;
-        this.targetY = y;
-        this.moveTimer = 0;
-    }
-    
-    update() {
-        // Movement
-        this.moveTimer--;
-        if (this.moveTimer <= 0) {
-            this.targetX = Math.random() * canvas.width;
-            this.targetY = Math.random() * canvas.height;
-            this.moveTimer = 60 + Math.random() * 60;
-        }
-        
-        const dx = this.targetX - this.x;
-        const dy = this.targetY - this.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        
-        if (dist > 10) {
-            this.x += (dx / dist) * this.speed;
-            this.y += (dy / dist) * this.speed;
-        }
-        
-        // Attack player if close
-        if (gameState.player) {
-            const pdx = gameState.player.x - this.x;
-            const pdy = gameState.player.y - this.y;
-            const pdist = Math.sqrt(pdx * pdx + pdy * pdy);
-            
-            if (pdist < 150 && this.attackCooldown === 0) {
-                this.attack();
-                this.attackCooldown = 80;
-            }
-        }
-        
-        if (this.attackCooldown > 0) {
-            this.attackCooldown--;
-        }
-    }
-    
-    attack() {
-        if (!gameState.player) return;
-        
-        const beam = {
-            x: this.x,
-            y: this.y,
-            vx: -5,
-            vy: 0,
-            width: 10,
-            height: 5,
-            damage: 8,
-            color: '#ff5500',
-            owner: 'enemy'
-        };
-        
-        gameState.beams.push(beam);
-        
-        // Aim at player
-        const dx = gameState.player.x - this.x;
-        const dy = gameState.player.y - this.y;
-        const angle = Math.atan2(dy, dx);
-        beam.vx = Math.cos(angle) * 5;
-        beam.vy = Math.sin(angle) * 5;
-    }
-    
-    takeDamage(damage) {
-        this.health -= damage;
-        createParticles(this.x, this.y, 5, '#ff9900');
-        
-        if (this.health <= 0) {
-            this.health = 0;
-            
-            if (gameState.player) {
-                gameState.player.enemiesDefeated++;
-                gameState.player.power += 100;
-                
-                // Level up every 5 enemies
-                if (gameState.player.enemiesDefeated % 5 === 0) {
-                    gameState.player.level++;
-                    gameState.player.maxHealth += 20;
-                    gameState.player.health = Math.min(gameState.player.maxHealth, gameState.player.health + 20);
-                    createParticles(gameState.player.x, gameState.player.y, 10, '#ffcc00');
-                }
-            }
-            
-            // Remove enemy
-            const index = gameState.enemies.indexOf(this);
-            if (index > -1) {
-                gameState.enemies.splice(index, 1);
-            }
-            
-            // Create explosion
-            createExplosion(this.x, this.y);
-            
-            return true;
-        }
-        return false;
-    }
-    
-    draw() {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
-        
-        // Draw face
-        ctx.fillStyle = '#99ff99';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y - this.height/2 - 10, 12, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Draw health bar
-        const healthPercent = this.health / this.maxHealth;
-        ctx.fillStyle = '#660000';
-        ctx.fillRect(this.x - 25, this.y - this.height/2 - 25, 50, 5);
-        ctx.fillStyle = '#00ff00';
-        ctx.fillRect(this.x - 25, this.y - this.height/2 - 25, 50 * healthPercent, 5);
-    }
-}
-
-// Game Functions
-function spawnEnemy() {
-    const side = Math.random() > 0.5 ? -50 : canvas.width + 50;
-    const enemy = new Enemy(side, Math.random() * canvas.height);
-    gameState.enemies.push(enemy);
-}
-
-function createParticles(x, y, count, color) {
-    for (let i = 0; i < count; i++) {
-        gameState.particles.push({
-            x: x,
-            y: y,
-            vx: (Math.random() - 0.5) * 4,
-            vy: (Math.random() - 0.5) * 4,
-            life: 1.0,
-            color: color
-        });
-    }
-}
-
-function createExplosion(x, y) {
-    for (let i = 0; i < 15; i++) {
-        gameState.particles.push({
-            x: x,
-            y: y,
-            vx: (Math.random() - 0.5) * 8,
-            vy: (Math.random() - 0.5) * 8,
-            life: 1.0,
-            color: '#ff9900'
-        });
-    }
-}
-
-function updateHUD() {
-    if (!gameState.player) return;
-    
-    const player = gameState.player;
-    
-    // Health
-    const healthPercent = (player.health / player.maxHealth) * 100;
-    document.getElementById('health-fill').style.width = `${healthPercent}%`;
-    document.getElementById('health-text').textContent = `${Math.floor(player.health)}/${player.maxHealth}`;
-    
-    // Ki
-    const kiPercent = (player.ki / player.maxKi) * 100;
-    document.getElementById('ki-fill').style.width = `${kiPercent}%`;
-    const kiText = player.playerClass === 'android' ? '∞' : Math.floor(player.ki);
-    document.getElementById('ki-text').textContent = `${kiText}/${player.ki === 999 ? '∞' : player.maxKi}`;
-    
-    // Power level
-    document.getElementById('power-level').textContent = player.power.toLocaleString();
-    document.getElementById('hud-level').textContent = player.level;
-}
-
-function updateEnemyHUD(enemy) {
-    if (!enemy) return;
-    
-    const healthPercent = (enemy.health / enemy.maxHealth) * 100;
-    document.getElementById('enemy-health').style.width = `${healthPercent}%`;
-}
-
-function gameOver() {
-    gameState.gameRunning = false;
-    
-    // Update final stats
-    if (gameState.player) {
-        document.getElementById('final-power').textContent = gameState.player.power.toLocaleString();
-        document.getElementById('final-enemies').textContent = gameState.player.enemiesDefeated;
-        
-        const minutes = Math.floor(gameState.gameTime / 3600);
-        const seconds = Math.floor((gameState.gameTime % 3600) / 60);
-        document.getElementById('final-time').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }
-    
-    showScreen('gameover');
-}
-
-function restartGame() {
-    startGame();
-}
-
-function togglePause() {
-    gameState.gameRunning = !gameState.gameRunning;
-    if (gameState.gameRunning) {
-        gameLoop();
-    }
-}
-
-function handleKeyDown(e) {
-    if (!gameState.player || !gameState.gameRunning) return;
-    
-    const key = e.key.toLowerCase();
-    
-    // Movement
-    if (key === 'w') gameState.player.moveUp = true;
-    if (key === 's') gameState.player.moveDown = true;
-    if (key === 'a') gameState.player.moveLeft = true;
-    if (key === 'd') gameState.player.moveRight = true;
-    
-    // Actions
-    if (key === 'q') gameState.player.isCharging = true;
-    if (key === 'e') gameState.player.attack();
-    if (key === 'f') gameState.player.transform();
-    
-    // Pause with space
-    if (key === ' ') togglePause();
-}
-
-function handleKeyUp(e) {
-    if (!gameState.player) return;
-    
-    const key = e.key.toLowerCase();
-    if (key === 'w') gameState.player.moveUp = false;
-    if (key === 's') gameState.player.moveDown = false;
-    if (key === 'a') gameState.player.moveLeft = false;
-    if (key === 'd') gameState.player.moveRight = false;
-    if (key === 'q') gameState.player.isCharging = false;
-}
-
-// Main Game Loop
-function gameLoop() {
-    if (!gameState.gameRunning) return;
-    
-    // Clear canvas
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw stars
-    ctx.fillStyle = 'white';
-    for (let i = 0; i < 50; i++) {
-        const x = (i * 37) % canvas.width;
-        const y = (i * 29) % canvas.height;
-        ctx.beginPath();
-        ctx.arc(x, y, 1, 0, Math.PI * 2);
-        ctx.fill();
-    }
-    
-    gameState.gameTime++;
-    
-    // Spawn enemies occasionally
-    if (gameState.gameTime % 300 === 0 && gameState.enemies.length < 8) {
-        spawnEnemy();
-    }
-    
-    // Update and draw player
-    if (gameState.player) {
-        gameState.player.update();
-        gameState.player.draw();
-    }
-    
-    // Update and draw enemies
-    let nearestEnemy = null;
-    let nearestDist = Infinity;
-    
-    gameState.enemies.forEach(enemy => {
-        enemy.update();
-        enemy.draw();
-        
-        // Find nearest enemy for HUD
-        if (gameState.player) {
-            const dx = enemy.x - gameState.player.x;
-            const dy = enemy.y - gameState.player.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            
-            if (dist < nearestDist && dist < 300) {
-                nearestDist = dist;
-                nearestEnemy = enemy;
-            }
-        }
-    });
-    
-    // Update enemy HUD
-    if (nearestEnemy) {
-        updateEnemyHUD(nearestEnemy);
-        document.getElementById('enemy-hud').classList.remove('hidden');
-    } else {
-        document.getElementById('enemy-hud').classList.add('hidden');
-    }
-    
-    // Update and draw beams
-    for (let i = gameState.beams.length - 1; i >= 0; i--) {
-        const beam = gameState.beams[i];
-        beam.x += beam.vx;
-        beam.y += beam.vy;
-        
-        // Check collisions
-        if (beam.owner === 'player') {
-            // Collision with enemies
-            for (let j = gameState.enemies.length - 1; j >= 0; j--) {
-                const enemy = gameState.enemies[j];
-                const dx = beam.x - enemy.x;
-                const dy = beam.y - enemy.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                if (dist < 30) {
-                    const defeated = enemy.takeDamage(beam.damage);
-                    gameState.beams.splice(i, 1);
-                    break;
-                }
-            }
-        } else if (beam.owner === 'enemy' && gameState.player) {
-            // Collision with player
-            const dx = beam.x - gameState.player.x;
-            const dy = beam.y - gameState.player.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            
-            if (dist < 30) {
-                gameState.player.takeDamage(beam.damage);
-                gameState.beams.splice(i, 1);
-            }
-        }
-        
-        // Remove out of bounds beams
-        if (beam.x < -100 || beam.x > canvas.width + 100 || 
-            beam.y < -100 || beam.y > canvas.height + 100) {
-            gameState.beams.splice(i, 1);
-        }
-    }
-    
-    // Draw beams
-    gameState.beams.forEach(beam => {
-        // Beam glow
-        ctx.beginPath();
-        ctx.arc(beam.x, beam.y, beam.width + 3, 0, Math.PI * 2);
-        const gradient = ctx.createRadialGradient(
-            beam.x, beam.y, 0,
-            beam.x, beam.y, beam.width + 3
-        );
-        gradient.addColorStop(0, beam.color + 'ff');
-        gradient.addColorStop(1, beam.color + '00');
-        ctx.fillStyle = gradient;
-        ctx.fill();
-        
-        // Beam core
-        ctx.fillStyle = beam.color;
-        ctx.fillRect(beam.x - beam.width/2, beam.y - beam.height/2, beam.width, beam.height);
-    });
-    
-    // Update and draw particles
-    for (let i = gameState.particles.length - 1; i >= 0; i--) {
-        const p = gameState.particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= 0.03;
-        
-        if (p.life <= 0) {
-            gameState.particles.splice(i, 1);
-        }
-    }
-    
-    gameState.particles.forEach(p => {
-        ctx.globalAlpha = p.life;
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1.0;
-    });
-    
-    requestAnimationFrame(gameLoop);
-}
-
-// Initialize game when page loads
-window.addEventListener('load', init);
-console.log('Game script loaded, waiting for init...');

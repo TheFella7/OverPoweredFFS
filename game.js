@@ -1,5 +1,5 @@
 // Game State
-let gameState = {
+const gameState = {
     screen: 'start',
     gameRunning: false,
     player: null,
@@ -62,14 +62,10 @@ const classes = {
 // DOM Elements
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const screens = {
-    start: document.getElementById('start-screen'),
-    game: document.getElementById('game-screen'),
-    gameover: document.getElementById('gameover-screen')
-};
 
 // Initialize Game
 function init() {
+    console.log('Game initializing...');
     setupCanvas();
     setupEventListeners();
     updateClassInfo('saiyan');
@@ -77,12 +73,13 @@ function init() {
     // Check if mobile
     gameState.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if (gameState.isMobile) {
-        document.querySelector('.mobile-controls').classList.remove('hidden');
+        document.getElementById('mobile-controls').classList.remove('hidden');
         setupMobileControls();
     }
     
     // Start game loop
-    requestAnimationFrame(gameLoop);
+    gameLoop();
+    console.log('Game initialized successfully');
 }
 
 function setupCanvas() {
@@ -96,6 +93,8 @@ function setupCanvas() {
 }
 
 function setupEventListeners() {
+    console.log('Setting up event listeners...');
+    
     // Class selection
     document.querySelectorAll('.class-option').forEach(option => {
         option.addEventListener('click', function() {
@@ -107,20 +106,36 @@ function setupEventListeners() {
     });
     
     // Start game button
-    document.getElementById('start-button').addEventListener('click', startGame);
+    const startButton = document.getElementById('start-button');
+    if (startButton) {
+        console.log('Start button found, adding click listener');
+        startButton.addEventListener('click', startGame);
+    } else {
+        console.error('Start button not found!');
+    }
     
     // Restart button
-    document.getElementById('restart-btn').addEventListener('click', startGame);
+    const restartButton = document.getElementById('restart-btn');
+    if (restartButton) {
+        restartButton.addEventListener('click', restartGame);
+    }
     
     // Pause button
-    document.getElementById('pause-btn').addEventListener('click', togglePause);
+    const pauseButton = document.getElementById('pause-btn');
+    if (pauseButton) {
+        pauseButton.addEventListener('click', togglePause);
+    }
     
     // Keyboard controls
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
+    
+    console.log('Event listeners set up');
 }
 
 function setupMobileControls() {
+    console.log('Setting up mobile controls...');
+    
     // Movement buttons
     ['up', 'down', 'left', 'right'].forEach(dir => {
         const btn = document.getElementById(`btn-${dir}`);
@@ -142,21 +157,30 @@ function setupMobileControls() {
     });
     
     // Action buttons
-    document.getElementById('btn-charge').addEventListener('touchstart', () => {
-        if (gameState.player) gameState.player.isCharging = true;
-    });
+    const chargeBtn = document.getElementById('btn-charge');
+    if (chargeBtn) {
+        chargeBtn.addEventListener('touchstart', () => {
+            if (gameState.player) gameState.player.isCharging = true;
+        });
+        
+        chargeBtn.addEventListener('touchend', () => {
+            if (gameState.player) gameState.player.isCharging = false;
+        });
+    }
     
-    document.getElementById('btn-charge').addEventListener('touchend', () => {
-        if (gameState.player) gameState.player.isCharging = false;
-    });
+    const attackBtn = document.getElementById('btn-attack');
+    if (attackBtn) {
+        attackBtn.addEventListener('touchstart', () => {
+            if (gameState.player) gameState.player.attack();
+        });
+    }
     
-    document.getElementById('btn-attack').addEventListener('touchstart', () => {
-        if (gameState.player) gameState.player.attack();
-    });
-    
-    document.getElementById('btn-transform').addEventListener('touchstart', () => {
-        if (gameState.player) gameState.player.transform();
-    });
+    const transformBtn = document.getElementById('btn-transform');
+    if (transformBtn) {
+        transformBtn.addEventListener('touchstart', () => {
+            if (gameState.player) gameState.player.transform();
+        });
+    }
 }
 
 function updateClassInfo(className) {
@@ -169,17 +193,36 @@ function updateClassInfo(className) {
 }
 
 function showScreen(screenName) {
+    console.log(`Showing screen: ${screenName}`);
     gameState.screen = screenName;
-    Object.values(screens).forEach(screen => {
+    
+    // Hide all screens
+    document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
     });
-    screens[screenName].classList.add('active');
+    
+    // Show selected screen
+    const screen = document.getElementById(`${screenName}-screen`);
+    if (screen) {
+        screen.classList.add('active');
+    } else {
+        console.error(`Screen ${screenName} not found!`);
+    }
 }
 
 // Start Game
 function startGame() {
-    const playerName = document.getElementById('player-name').value.trim() || 'WARRIOR';
-    const selectedClass = document.querySelector('.class-option.active').dataset.class;
+    console.log('Starting game...');
+    
+    const playerName = document.getElementById('player-name').value.trim() || 'GOKU';
+    const selectedClassElement = document.querySelector('.class-option.active');
+    
+    if (!selectedClassElement) {
+        console.error('No class selected!');
+        return;
+    }
+    
+    const selectedClass = selectedClassElement.dataset.class;
     
     // Create player
     gameState.player = new Player(playerName, selectedClass);
@@ -199,6 +242,7 @@ function startGame() {
     spawnEnemy();
     
     showScreen('game');
+    console.log('Game started! Player:', gameState.player);
 }
 
 // Player Class
@@ -500,11 +544,6 @@ function spawnEnemy() {
     const side = Math.random() > 0.5 ? -50 : canvas.width + 50;
     const enemy = new Enemy(side, Math.random() * canvas.height);
     gameState.enemies.push(enemy);
-    
-    // Show enemy HUD
-    document.getElementById('enemy-hud').classList.remove('hidden');
-    document.getElementById('enemy-name').textContent = 'ENEMY';
-    document.getElementById('enemy-health').style.width = '100%';
 }
 
 function createParticles(x, y, count, color) {
@@ -577,10 +616,14 @@ function gameOver() {
     showScreen('gameover');
 }
 
+function restartGame() {
+    startGame();
+}
+
 function togglePause() {
     gameState.gameRunning = !gameState.gameRunning;
     if (gameState.gameRunning) {
-        requestAnimationFrame(gameLoop);
+        gameLoop();
     }
 }
 
@@ -668,7 +711,12 @@ function gameLoop() {
     });
     
     // Update enemy HUD
-    updateEnemyHUD(nearestEnemy);
+    if (nearestEnemy) {
+        updateEnemyHUD(nearestEnemy);
+        document.getElementById('enemy-hud').classList.remove('hidden');
+    } else {
+        document.getElementById('enemy-hud').classList.add('hidden');
+    }
     
     // Update and draw beams
     for (let i = gameState.beams.length - 1; i >= 0; i--) {
@@ -755,3 +803,4 @@ function gameLoop() {
 
 // Initialize game when page loads
 window.addEventListener('load', init);
+console.log('Game script loaded, waiting for init...');

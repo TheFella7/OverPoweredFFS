@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBZ Open World: Galactic Battle</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Start Screen with Class Selection -->
+    <div id="start-screen" class="screen">
+        <div class="start-container">
+            <div class="game-title">
+                <h1><i class="fas fa-globe-asia"></i> DRAGON BALL Z</h1>
+                <h2>OPEN WORLD ADVENTURE</h2>
+                <p class="tagline">Choose your destiny, master your power, save the universe!</p>
+            </div>
+            
+            <div class="character-creation">
+                <div class="creation-form">
+                    <h3><i class="fas fa-user-circle"></i> CREATE YOUR WARRIOR</h3>
+                    
+                    <div class="form-group">
+                        <label for="player-name"><i class="fas fa-signature"></i> WARRIOR NAME</label>
+                        <input type="text" id="player-name" placeholder="Enter your warrior's name" maxlength="20">
+                        <div class="name-examples">Examples: Goku, Vegeta, Piccolo, Gohan, Trunks</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-chess-king"></i> CHOOSE YOUR RACE</label>
+                        <div class="race-selection">
+                            <div class="race-option" data-race="saiyan">
+                                <div class="race-icon"><i class="fas fa-fire"></i></div>
+                                <div class="race-title">SAIYAN</div>
+                                <div class="race-desc">
+                                    <ul>
+                                        <li>High Power Growth</li>
+                                        <li>Super Saiyan Transformations</li>
+                                        <li>Zenkai Boost (Heal after battle)</li>
+                                        <li>Weakness: Prideful</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="race-option" data-race="human">
+                                <div class="race-icon"><i class="fas fa-user"></i></div>
+                                <div class="race-title">HUMAN</div>
+                                <div class="race-desc">
+                                    <ul>
+                                        <li>Fast Learning</li>
+                                        <li>Master Techniques Quickly</li>
+                                        <li>Strong Spirit Bomb</li>
+                                        <li>Weakness: Limited Power</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="race-option" data-race="namekian">
+                                <div class="race-icon"><i class="fas fa-leaf"></i></div>
+                                <div class="race-title">NAMEKIAN</div>
+                                <div class="race-desc">
+                                    <ul>
+                                        <li>Regeneration Ability</li>
+                                        <li>Stretching Limbs</li>
+                                        <li>Create Dragon Balls</li>
+                                        <li>Weakness: Water</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="race-option" data-race="android">
+                                <div class="race-icon"><i class="fas fa-robot"></i></div>
+                                <div class="race-title">ANDROID</div>
+                                <div class="race-desc">
+                                    <ul>
+                                        <li>Infinite Energy</li>
+                                        <li>No Ki Drain</li>
+                                        <li>Absorb Energy</li>
+                                        <li>Weakness: Magnetic Fields</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="race-option" data-race="frieza">
+                                <div class="race-icon"><i class="fas fa-skull-crossbones"></i></div>
+                                <div class="race-title">FRIEZA RACE</div>
+                                <div class="race-desc">
+                                    <ul>
+                                        <li>Natural Power</li>
+                                        <li>Transformations</li>
+                                        <li>Space Survival</li>
+                                        <li>Weakness: Arrogance</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-fist-raised"></i> STARTING TECHNIQUE</label>
+                        <div class="technique-selection" id="technique-selection">
+                            <!-- Techniques will be populated based on race -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group stats-preview">
+                        <label><i class="fas fa-chart-line"></i> STARTING STATS</label>
+                        <div class="stats-grid">
+                            <div class="stat-preview">
+                                <span class="stat-name">POWER LEVEL</span>
+                                <span class="stat-value" id="preview-power">1,000</span>
+                            </div>
+                            <div class="stat-preview">
+                                <span class="stat-name">HEALTH</span>
+                                <span class="stat-value" id="preview-health">100</span>
+                            </div>
+                            <div class="stat-preview">
+                                <span class="stat-name">KI</span>
+                                <span class="stat-value" id="preview-ki">100</span>
+                            </div>
+                            <div class="stat-preview">
+                                <span class="stat-name">SPEED</span>
+                                <span class="stat-value" id="preview-speed">5</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="start-buttons">
+                        <button id="start-game-btn" class="start-btn">
+                            <i class="fas fa-play-circle"></i> BEGIN ADVENTURE
+                        </button>
+                        <button id="how-to-play-btn" class="start-btn secondary">
+                            <i class="fas fa-question-circle"></i> HOW TO PLAY
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-info">
+                <div class="info-box">
+                    <h4><i class="fas fa-info-circle"></i> GAME FEATURES</h4>
+                    <ul>
+                        <li>Open World Exploration</li>
+                        <li>Dynamic Power Level System</li>
+                        <li>Real-time Combat</li>
+                        <li>Character Progression</li>
+                        <li>Random Encounters</li>
+                        <li>Quests and Missions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- How to Play Screen -->
+    <div id="how-to-play-screen" class="screen hidden">
+        <div class="help-container">
+            <h2><i class="fas fa-book-open"></i> HOW TO PLAY</h2>
+            
+            <div class="help-sections">
+                <div class="help-section">
+                    <h3><i class="fas fa-gamepad"></i> CONTROLS</h3>
+                    <div class="controls-list">
+                        <div class="control-item">
+                            <span class="key">W / ↑</span>
+                            <span class="action">Move Up / Fly</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">S / ↓</span>
+                            <span class="action">Move Down</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">A / ←</span>
+                            <span class="action">Move Left</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">D / →</span>
+                            <span class="action">Move Right</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">SPACEBAR</span>
+                            <span class="action">Jump / Ascend</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">Q</span>
+                            <span class="action">Charge Ki</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">E</span>
+                            <span class="action">Attack / Energy Blast</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">R</span>
+                            <span class="action">Special Technique</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">F</span>
+                            <span class="action">Transform (when available)</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">I</span>
+                            <span class="action">Open Inventory</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">M</span>
+                            <span class="action">Toggle Map</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">ESC</span>
+                            <span class="action">Pause Menu</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <h3><i class="fas fa-dragon"></i> GAMEPLAY</h3>
+                    <ul class="gameplay-list">
+                        <li>Explore the open world to find enemies, items, and quests</li>
+                        <li>Defeat enemies to gain experience and increase your power level</li>
+                        <li>Charge your Ki (Q key) before using powerful attacks</li>
+                        <li>Each race has unique abilities and transformations</li>
+                        <li>Watch your health and Ki bars during combat</li>
+                        <li>Collect Dragon Balls to summon Shenron and make a wish</li>
+                        <li>Complete quests for special rewards</li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
+                    <h3><i class="fas fa-medal"></i> RACE ABILITIES</h3>
+                    <div class="abilities-list">
+                        <div class="ability-item">
+                            <strong>Saiyan:</strong> Zenkai Boost (heal after near-death), Super Saiyan transformations
+                        </div>
+                        <div class="ability-item">
+                            <strong>Human:</strong> Fast learning, Spirit Bomb, high technique mastery
+                        </div>
+                        <div class="ability-item">
+                            <strong>Namekian:</strong> Regeneration, stretch limbs, create objects
+                        </div>
+                        <div class="ability-item">
+                            <strong>Android:</strong> Infinite energy, absorb attacks, no Ki drain
+                        </div>
+                        <div class="ability-item">
+                            <strong>Frieza Race:</strong> Natural power, transformations, survive in space
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="back-to-start-btn" class="back-btn">
+                <i class="fas fa-arrow-left"></i> BACK TO CHARACTER CREATION
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Game Screen -->
+    <div id="game-screen" class="screen hidden">
+        <div class="game-container">
+            <!-- Game UI -->
+            <div class="game-ui">
+                <div class="player-hud">
+                    <div class="player-header">
+                        <div class="player-name-display" id="player-name-display">WARRIOR</div>
+                        <div class="player-race-display" id="player-race-display">SAIYAN</div>
+                        <div class="player-level">LVL: <span id="player-level">1</span></div>
+                    </div>
+                    
+                    <div class="player-stats">
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <i class="fas fa-heart"></i> HEALTH
+                                <span class="stat-value" id="health-value">100/100</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="health-bar" id="health-bar"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <i class="fas fa-bolt"></i> KI
+                                <span class="stat-value" id="ki-value">100/100</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="ki-bar" id="ki-bar"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <i class="fas fa-chart-line"></i> POWER LEVEL
+                                <span class="stat-value" id="power-level">1,000</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="power-bar" id="power-bar"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <i class="fas fa-star"></i> EXPERIENCE
+                                <span class="stat-value" id="exp-value">0/100</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="exp-bar" id="exp-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="player-abilities">
+                        <div class="ability" id="ability-1">
+                            <div class="ability-icon">Q</div>
+                            <div class="ability-name">Charge Ki</div>
+                        </div>
+                        <div class="ability" id="ability-2">
+                            <div class="ability-icon">E</div>
+                            <div class="ability-name">Energy Blast</div>
+                        </div>
+                        <div class="ability" id="ability-3">
+                            <div class="ability-icon">R</div>
+                            <div class="ability-name" id="special-name">Special</div>
+                        </div>
+                        <div class="ability" id="ability-4">
+                            <div class="ability-icon">F</div>
+                            <div class="ability-name">Transform</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-info-hud">
+                    <div class="location-display">
+                        <i class="fas fa-map-marker-alt"></i> 
+                        <span id="location-name">Earth - West City</span>
+                    </div>
+                    
+                    <div class="enemy-hud hidden" id="enemy-hud">
+                        <div class="enemy-name" id="enemy-name">Saibaman</div>
+                        <div class="enemy-health-bar">
+                            <div class="enemy-health-fill" id="enemy-health"></div>
+                        </div>
+                        <div class="enemy-power">PL: <span id="enemy-power">500</span></div>
+                    </div>
+                    
+                    <div class="quest-hud">
+                        <div class="quest-title">CURRENT QUEST:</div>
+                        <div class="quest-desc" id="current-quest">Find and defeat 3 Saibamen</div>
+                        <div class="quest-progress">
+                            <span id="quest-progress">0/3</span>
+                            <div class="quest-bar">
+                                <div class="quest-fill" id="quest-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dragonball-hud">
+                        <div class="db-title">DRAGON BALLS:</div>
+                        <div class="db-icons" id="dragonballs">
+                            <!-- Dragon balls will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Game Canvas -->
+            <div class="game-canvas-container">
+                <canvas id="gameCanvas" width="900" height="600"></canvas>
+                <div class="minimap" id="minimap">
+                    <div class="minimap-title">WORLD MAP</div>
+                    <canvas id="minimapCanvas" width="200" height="200"></canvas>
+                </div>
+            </div>
+            
+            <!-- Game Controls and Messages -->
+            <div class="game-controls">
+                <div class="messages-panel">
+                    <h3><i class="fas fa-scroll"></i> BATTLE LOG</h3>
+                    <div class="messages-container" id="battle-log">
+                        <div class="message">Welcome to the world of Dragon Ball Z!</div>
+                        <div class="message">Explore the world and fight enemies to grow stronger.</div>
+                    </div>
+                </div>
+                
+                <div class="quick-stats">
+                    <h3><i class="fas fa-trophy"></i> STATISTICS</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Enemies Defeated:</span>
+                            <span class="stat-number" id="enemies-defeated">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Training Complete:</span>
+                            <span class="stat-number" id="training-complete">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Quests Done:</span>
+                            <span class="stat-number" id="quests-done">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Time Played:</span>
+                            <span class="stat-number" id="time-played">0:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="game-buttons">
+                        <button id="pause-btn" class="game-btn">
+                            <i class="fas fa-pause"></i> PAUSE
+                        </button>
+                        <button id="inventory-btn" class="game-btn">
+                            <i class="fas fa-backpack"></i> INVENTORY
+                        </button>
+                        <button id="skills-btn" class="game-btn">
+                            <i class="fas fa-dragon"></i> SKILLS
+                        </button>
+                        <button id="quit-btn" class="game-btn quit">
+                            <i class="fas fa-sign-out-alt"></i> QUIT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pause Menu -->
+        <div id="pause-menu" class="overlay-menu hidden">
+            <div class="menu-container">
+                <h2><i class="fas fa-pause-circle"></i> GAME PAUSED</h2>
+                <div class="menu-options">
+                    <button id="resume-btn" class="menu-btn">
+                        <i class="fas fa-play"></i> RESUME GAME
+                    </button>
+                    <button id="settings-btn" class="menu-btn">
+                        <i class="fas fa-cog"></i> SETTINGS
+                    </button>
+                    <button id="save-btn" class="menu-btn">
+                        <i class="fas fa-save"></i> SAVE GAME
+                    </button>
+                    <button id="load-btn" class="menu-btn">
+                        <i class="fas fa-folder-open"></i> LOAD GAME
+                    </button>
+                    <button id="main-menu-btn" class="menu-btn">
+                        <i class="fas fa-home"></i> MAIN MENU
+                    </button>
+                </div>
+                <div class="menu-stats">
+                    <h3>Current Status</h3>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <span>Power Level:</span>
+                            <span id="pause-power">1,000</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Level:</span>
+                            <span id="pause-level">1</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Race:</span>
+                            <span id="pause-race">Saiyan</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Location:</span>
+                            <span id="pause-location">Earth</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Inventory Screen -->
+        <div id="inventory-screen" class="overlay-menu hidden">
+            <div class="inventory-container">
+                <h2><i class="fas fa-backpack"></i> INVENTORY</h2>
+                <div class="inventory-content">
+                    <div class="inventory-items" id="inventory-items">
+                        <!-- Items will be added here -->
+                    </div>
+                    <div class="inventory-stats">
+                        <h3>EQUIPPED ITEMS</h3>
+                        <div class="equipment-slots">
+                            <div class="slot" id="weapon-slot">
+                                <div class="slot-label">WEAPON</div>
+                                <div class="slot-item">None</div>
+                            </div>
+                            <div class="slot" id="armor-slot">
+                                <div class="slot-label">ARMOR</div>
+                                <div class="slot-item">None</div>
+                            </div>
+                            <div class="slot" id="accessory-slot">
+                                <div class="slot-label">ACCESSORY</div>
+                                <div class="slot-item">None</div>
+                            </div>
+                        </div>
+                        <div class="item-stats">
+                            <h3>ITEM STATS</h3>
+                            <div id="item-details">
+                                Select an item to view details
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="close-inventory" class="close-btn">
+                    <i class="fas fa-times"></i> CLOSE INVENTORY
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="screen hidden">
+        <div class="game-over-container">
+            <h1><i class="fas fa-skull"></i> GAME OVER</h1>
+            <div class="game-over-stats">
+                <h2>Your Warrior Has Fallen</h2>
+                <div class="final-stats">
+                    <div class="final-stat">
+                        <span class="stat-label">Highest Power Level:</span>
+                        <span class="stat-value" id="final-power">1,000</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="stat-label">Enemies Defeated:</span>
+                        <span class="stat-value" id="final-enemies">0</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="stat-label">Quests Completed:</span>
+                        <span class="stat-value" id="final-quests">0</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="stat-label">Time Survived:</span>
+                        <span class="stat-value" id="final-time">0:00</span>
+                    </div>
+                </div>
+                
+                <div class="game-over-buttons">
+                    <button id="retry-btn" class="game-over-btn">
+                        <i class="fas fa-redo"></i> RETRY
+                    </button>
+                    <button id="new-character-btn" class="game-over-btn">
+                        <i class="fas fa-user-plus"></i> NEW CHARACTER
+                    </button>
+                    <button id="main-menu-gameover-btn" class="game-over-btn">
+                        <i class="fas fa-home"></i> MAIN MENU
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

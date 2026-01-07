@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBZ Open World</title>
+    <title>DBZ Battle Arena</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,89 +11,87 @@
 <body>
     <!-- Start Screen -->
     <div id="start-screen" class="screen active">
-        <div class="container">
-            <div class="title">
-                <h1><i class="fas fa-dragon"></i> DRAGON BALL Z</h1>
-                <h2>OPEN WORLD BATTLE</h2>
+        <div class="menu-container">
+            <div class="title-section">
+                <h1><i class="fas fa-dragon"></i> DBZ BATTLE</h1>
+                <p class="subtitle">CHOOSE YOUR WARRIOR</p>
             </div>
             
-            <div class="character-creation">
-                <div class="creation-box">
-                    <div class="form-group">
-                        <label for="player-name">WARRIOR NAME</label>
-                        <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>CHOOSE YOUR RACE</label>
-                        <div class="race-grid">
-                            <div class="race-card active" data-race="saiyan">
-                                <div class="race-icon"><i class="fas fa-fire"></i></div>
-                                <div class="race-name">SAIYAN</div>
-                            </div>
-                            <div class="race-card" data-race="human">
-                                <div class="race-icon"><i class="fas fa-user"></i></div>
-                                <div class="race-name">HUMAN</div>
-                            </div>
-                            <div class="race-card" data-race="namekian">
-                                <div class="race-icon"><i class="fas fa-leaf"></i></div>
-                                <div class="race-name">NAMEKIAN</div>
-                            </div>
-                            <div class="race-card" data-race="android">
-                                <div class="race-icon"><i class="fas fa-robot"></i></div>
-                                <div class="race-name">ANDROID</div>
-                            </div>
-                            <div class="race-card" data-race="frieza">
-                                <div class="race-icon"><i class="fas fa-skull"></i></div>
-                                <div class="race-name">FRIEZA</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>STARTING TECHNIQUE</label>
-                        <div class="tech-grid" id="tech-grid">
-                            <!-- Filled by JS -->
-                        </div>
-                    </div>
-                    
-                    <div class="stats-preview">
-                        <div class="stat-item">
-                            <span>Power Level</span>
-                            <span id="preview-power">1,000</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>Health</span>
-                            <span id="preview-health">100</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>Ki</span>
-                            <span id="preview-ki">100</span>
-                        </div>
-                    </div>
-                    
-                    <button id="start-game" class="btn-primary">
-                        <i class="fas fa-play"></i> START GAME
-                    </button>
+            <div class="character-select">
+                <div class="name-input">
+                    <input type="text" id="player-name" placeholder="ENTER NAME" maxlength="12">
                 </div>
+                
+                <div class="class-selection">
+                    <div class="class-option active" data-class="saiyan">
+                        <div class="class-icon"><i class="fas fa-fire"></i></div>
+                        <div class="class-name">SAIYAN</div>
+                    </div>
+                    
+                    <div class="class-option" data-class="human">
+                        <div class="class-icon"><i class="fas fa-user"></i></div>
+                        <div class="class-name">HUMAN</div>
+                    </div>
+                    
+                    <div class="class-option" data-class="namekian">
+                        <div class="class-icon"><i class="fas fa-leaf"></i></div>
+                        <div class="class-name">NAMEKIAN</div>
+                    </div>
+                    
+                    <div class="class-option" data-class="android">
+                        <div class="class-icon"><i class="fas fa-robot"></i></div>
+                        <div class="class-name">ANDROID</div>
+                    </div>
+                    
+                    <div class="class-option" data-class="frieza">
+                        <div class="class-icon"><i class="fas fa-skull"></i></div>
+                        <div class="class-name">FRIEZA</div>
+                    </div>
+                </div>
+                
+                <div class="class-info">
+                    <h3 id="class-title">SAIYAN</h3>
+                    <p id="class-desc">Warrior race with incredible power growth. Can transform into Super Saiyan forms.</p>
+                    <div class="class-stats">
+                        <div class="stat">
+                            <span>Power:</span>
+                            <span id="stat-power">1,000</span>
+                        </div>
+                        <div class="stat">
+                            <span>Health:</span>
+                            <span id="stat-health">100</span>
+                        </div>
+                        <div class="stat">
+                            <span>Ki:</span>
+                            <span id="stat-ki">100</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="start-button" class="start-btn">
+                    <i class="fas fa-play"></i> START BATTLE
+                </button>
             </div>
             
             <div class="controls-info">
-                <div class="control-item">
-                    <span>WASD / Arrow Keys</span>
-                    <span>Move</span>
-                </div>
-                <div class="control-item">
-                    <span>Q / P</span>
-                    <span>Charge Ki</span>
-                </div>
-                <div class="control-item">
-                    <span>E / O</span>
-                    <span>Attack</span>
-                </div>
-                <div class="control-item">
-                    <span>F / G</span>
-                    <span>Transform</span>
+                <h3>CONTROLS</h3>
+                <div class="controls-grid">
+                    <div class="control">
+                        <span class="key">WASD</span>
+                        <span>MOVE</span>
+                    </div>
+                    <div class="control">
+                        <span class="key">Q</span>
+                        <span>CHARGE</span>
+                    </div>
+                    <div class="control">
+                        <span class="key">E</span>
+                        <span>ATTACK</span>
+                    </div>
+                    <div class="control">
+                        <span class="key">F</span>
+                        <span>TRANSFORM</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -101,98 +99,76 @@
     
     <!-- Game Screen -->
     <div id="game-screen" class="screen">
-        <div class="game-container">
-            <!-- Canvas -->
-            <canvas id="gameCanvas"></canvas>
-            
-            <!-- HUD -->
-            <div class="hud">
-                <div class="player-hud">
-                    <div class="player-info">
-                        <div class="player-name" id="hud-name">GOKU</div>
-                        <div class="player-race" id="hud-race">SAIYAN</div>
-                        <div class="player-level">LVL: <span id="hud-level">1</span></div>
-                    </div>
-                    
-                    <div class="health-bar">
-                        <div class="health-fill" id="health-bar"></div>
-                        <span class="health-text" id="health-text">100/100</span>
-                    </div>
-                    
-                    <div class="ki-bar">
-                        <div class="ki-fill" id="ki-bar"></div>
-                        <span class="ki-text" id="ki-text">100/100</span>
-                    </div>
-                    
-                    <div class="power-level">
-                        <i class="fas fa-bolt"></i>
-                        <span id="power-text">1,000</span>
-                    </div>
-                </div>
-                
-                <div class="enemy-hud hidden" id="enemy-hud">
-                    <div class="enemy-name" id="enemy-name">ENEMY</div>
-                    <div class="enemy-health">
-                        <div class="enemy-health-fill" id="enemy-health"></div>
-                    </div>
-                    <div class="enemy-power" id="enemy-power">500</div>
-                </div>
-                
-                <div class="action-buttons">
-                    <button class="action-btn" id="charge-btn">
-                        <i class="fas fa-bolt"></i> CHARGE
-                    </button>
-                    <button class="action-btn" id="attack-btn">
-                        <i class="fas fa-fire"></i> ATTACK
-                    </button>
-                    <button class="action-btn" id="transform-btn">
-                        <i class="fas fa-random"></i> TRANSFORM
-                    </button>
-                </div>
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="game-hud">
+            <div class="player-info">
+                <div class="hud-name" id="hud-player-name">PLAYER</div>
+                <div class="hud-class" id="hud-player-class">SAIYAN</div>
+                <div class="hud-level">LVL <span id="hud-level">1</span></div>
             </div>
             
-            <!-- Mobile Controls -->
-            <div class="mobile-controls">
-                <div class="dpad">
-                    <button class="dpad-btn up" id="mobile-up">↑</button>
-                    <button class="dpad-btn down" id="mobile-down">↓</button>
-                    <button class="dpad-btn left" id="mobile-left">←</button>
-                    <button class="dpad-btn right" id="mobile-right">→</button>
-                </div>
-                <div class="mobile-actions">
-                    <button class="mobile-btn" id="mobile-charge">
-                        <i class="fas fa-bolt"></i>
-                    </button>
-                    <button class="mobile-btn" id="mobile-attack">
-                        <i class="fas fa-fire"></i>
-                    </button>
-                    <button class="mobile-btn" id="mobile-transform">
-                        <i class="fas fa-random"></i>
-                    </button>
-                </div>
+            <div class="health-bar">
+                <div class="health-fill" id="health-fill"></div>
+                <span class="health-text" id="health-text">100/100</span>
+            </div>
+            
+            <div class="ki-bar">
+                <div class="ki-fill" id="ki-fill"></div>
+                <span class="ki-text" id="ki-text">100/100</span>
+            </div>
+            
+            <div class="power-display">
+                <i class="fas fa-bolt"></i>
+                <span id="power-level">1,000</span>
             </div>
         </div>
+        
+        <div class="enemy-hud hidden" id="enemy-hud">
+            <div class="enemy-name" id="enemy-name">ENEMY</div>
+            <div class="enemy-health">
+                <div class="enemy-health-fill" id="enemy-health"></div>
+            </div>
+        </div>
+        
+        <div class="mobile-controls hidden">
+            <div class="d-pad">
+                <button class="move-btn up" id="btn-up">↑</button>
+                <button class="move-btn down" id="btn-down">↓</button>
+                <button class="move-btn left" id="btn-left">←</button>
+                <button class="move-btn right" id="btn-right">→</button>
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn" id="btn-charge">CHARGE</button>
+                <button class="action-btn" id="btn-attack">ATTACK</button>
+                <button class="action-btn" id="btn-transform">TRANSFORM</button>
+            </div>
+        </div>
+        
+        <button id="pause-btn" class="pause-btn">
+            <i class="fas fa-pause"></i>
+        </button>
     </div>
     
     <!-- Game Over Screen -->
-    <div id="game-over-screen" class="screen">
-        <div class="game-over">
+    <div id="gameover-screen" class="screen">
+        <div class="gameover-container">
             <h1><i class="fas fa-skull"></i> GAME OVER</h1>
-            <div class="stats">
-                <div class="stat">
-                    <span>Final Power Level</span>
+            <div class="final-stats">
+                <div class="final-stat">
+                    <span>Power Level:</span>
                     <span id="final-power">0</span>
                 </div>
-                <div class="stat">
-                    <span>Enemies Defeated</span>
+                <div class="final-stat">
+                    <span>Enemies Defeated:</span>
                     <span id="final-enemies">0</span>
                 </div>
-                <div class="stat">
-                    <span>Time Survived</span>
+                <div class="final-stat">
+                    <span>Time Survived:</span>
                     <span id="final-time">0:00</span>
                 </div>
             </div>
-            <button id="restart-btn" class="btn-primary">
+            <button id="restart-btn" class="start-btn">
                 <i class="fas fa-redo"></i> PLAY AGAIN
             </button>
         </div>

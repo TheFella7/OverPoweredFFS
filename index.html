@@ -3,174 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBZ Battle Arena</title>
+    <title>Dragon Ball: Beyond Legacy</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Start Screen -->
-    <div id="start-screen" class="screen active">
-        <div class="menu-container">
-            <div class="title-section">
-                <h1><i class="fas fa-dragon"></i> DBZ BATTLE</h1>
-                <p class="subtitle">CHOOSE YOUR WARRIOR</p>
+    <!-- Game Container -->
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen">
+            <div class="title-container">
+                <h1 class="game-title">DRAGON BALL</h1>
+                <h2 class="game-subtitle">BEYOND LEGACY</h2>
+                <div class="logo">
+                    <div class="db-logo">龍</div>
+                </div>
             </div>
             
-            <div class="character-select">
-                <div class="name-input">
-                    <input type="text" id="player-name" placeholder="ENTER NAME" maxlength="12" value="GOKU">
+            <div id="character-creation">
+                <div class="input-group">
+                    <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
+                    <div class="input-hint">(3-20 characters)</div>
                 </div>
                 
                 <div class="class-selection">
-                    <div class="class-option active" data-class="saiyan">
-                        <div class="class-icon"><i class="fas fa-fire"></i></div>
-                        <div class="class-name">SAIYAN</div>
-                    </div>
-                    
-                    <div class="class-option" data-class="human">
-                        <div class="class-icon"><i class="fas fa-user"></i></div>
-                        <div class="class-name">HUMAN</div>
-                    </div>
-                    
-                    <div class="class-option" data-class="namekian">
-                        <div class="class-icon"><i class="fas fa-leaf"></i></div>
-                        <div class="class-name">NAMEKIAN</div>
-                    </div>
-                    
-                    <div class="class-option" data-class="android">
-                        <div class="class-icon"><i class="fas fa-robot"></i></div>
-                        <div class="class-name">ANDROID</div>
-                    </div>
-                    
-                    <div class="class-option" data-class="frieza">
-                        <div class="class-icon"><i class="fas fa-skull"></i></div>
-                        <div class="class-name">FRIEZA</div>
-                    </div>
-                </div>
-                
-                <div class="class-info">
-                    <h3 id="class-title">SAIYAN</h3>
-                    <p id="class-desc">Warrior race with incredible power growth. Can transform into Super Saiyan forms.</p>
-                    <div class="class-stats">
-                        <div class="stat">
-                            <span>Power:</span>
-                            <span id="stat-power">1,000</span>
+                    <h3>Choose Your Class</h3>
+                    <div class="class-options">
+                        <div class="class-option" data-class="saiyan">
+                            <div class="class-icon"><i class="fas fa-bolt"></i></div>
+                            <h4>Saiyan</h4>
+                            <p>High power, grows stronger in battle</p>
+                            <div class="stats">
+                                <span>Power: ★★★★★</span>
+                                <span>Speed: ★★★★☆</span>
+                                <span>Defense: ★★★☆☆</span>
+                            </div>
                         </div>
-                        <div class="stat">
-                            <span>Health:</span>
-                            <span id="stat-health">100</span>
+                        
+                        <div class="class-option" data-class="human">
+                            <div class="class-icon"><i class="fas fa-user"></i></div>
+                            <h4>Human Martial Artist</h4>
+                            <p>Balanced stats, masters techniques</p>
+                            <div class="stats">
+                                <span>Power: ★★★★☆</span>
+                                <span>Speed: ★★★★☆</span>
+                                <span>Defense: ★★★★☆</span>
+                            </div>
                         </div>
-                        <div class="stat">
-                            <span>Ki:</span>
-                            <span id="stat-ki">100</span>
+                        
+                        <div class="class-option" data-class="namekian">
+                            <div class="class-icon"><i class="fas fa-leaf"></i></div>
+                            <h4>Namekian</h4>
+                            <p>Regenerates health, good defense</p>
+                            <div class="stats">
+                                <span>Power: ★★★☆☆</span>
+                                <span>Speed: ★★★☆☆</span>
+                                <span>Defense: ★★★★★</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <button id="start-button" class="start-btn">
-                    <i class="fas fa-play"></i> START BATTLE
+                <button id="start-game-btn" class="btn-start">
+                    <i class="fas fa-play"></i> BEGIN ADVENTURE
                 </button>
             </div>
             
             <div class="controls-info">
-                <h3>CONTROLS</h3>
-                <div class="controls-grid">
-                    <div class="control">
-                        <span class="key">WASD</span>
-                        <span>MOVE</span>
-                    </div>
-                    <div class="control">
-                        <span class="key">Q</span>
-                        <span>CHARGE</span>
-                    </div>
-                    <div class="control">
-                        <span class="key">E</span>
-                        <span>ATTACK</span>
-                    </div>
-                    <div class="control">
-                        <span class="key">F</span>
-                        <span>TRANSFORM</span>
-                    </div>
-                </div>
+                <p><strong>Controls:</strong> Arrow Keys/WASD to move, Space to interact/attack</p>
+                <p><strong>Touch:</strong> Use on-screen controls or swipe to move</p>
             </div>
         </div>
-    </div>
-    
-    <!-- Game Screen -->
-    <div id="game-screen" class="screen">
-        <canvas id="gameCanvas"></canvas>
-        
-        <div class="game-hud">
-            <div class="player-info">
-                <div class="hud-name" id="hud-player-name">PLAYER</div>
-                <div class="hud-class" id="hud-player-class">SAIYAN</div>
-                <div class="hud-level">LVL <span id="hud-level">1</span></div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen hidden">
+            <!-- Game Canvas -->
+            <div class="canvas-container">
+                <canvas id="game-canvas"></canvas>
+                <!-- Mobile Controls -->
+                <div id="mobile-controls">
+                    <div class="d-pad">
+                        <div class="d-pad-top" data-key="ArrowUp">↑</div>
+                        <div class="d-pad-left" data-key="ArrowLeft">←</div>
+                        <div class="d-pad-center"></div>
+                        <div class="d-pad-right" data-key="ArrowRight">→</div>
+                        <div class="d-pad-bottom" data-key="ArrowDown">↓</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn" id="action-btn">⚡</button>
+                        <button class="action-btn" id="ki-charge-btn">💥</button>
+                        <button class="action-btn" id="fly-btn">🪽</button>
+                    </div>
+                </div>
             </div>
             
-            <div class="health-bar">
-                <div class="health-fill" id="health-fill"></div>
-                <span class="health-text" id="health-text">100/100</span>
+            <!-- HUD -->
+            <div id="hud">
+                <div class="hud-top">
+                    <div class="player-info">
+                        <div class="player-name-display" id="player-name-display"></div>
+                        <div class="player-class-display" id="player-class-display"></div>
+                    </div>
+                    <div class="power-level">
+                        <span class="power-label">POWER LEVEL:</span>
+                        <span class="power-value" id="power-level">1,000</span>
+                    </div>
+                </div>
+                
+                <div class="hud-bottom">
+                    <div class="health-bar-container">
+                        <div class="bar-label">HP</div>
+                        <div class="health-bar">
+                            <div class="health-fill" id="health-fill"></div>
+                        </div>
+                        <div class="health-text" id="health-text">100/100</div>
+                    </div>
+                    
+                    <div class="ki-bar-container">
+                        <div class="bar-label">KI</div>
+                        <div class="ki-bar">
+                            <div class="ki-fill" id="ki-fill"></div>
+                        </div>
+                        <div class="ki-text" id="ki-text">50/50</div>
+                    </div>
+                    
+                    <div class="hud-right">
+                        <div class="dragon-balls">
+                            <div class="db-hint">Dragon Balls: <span id="db-count">0</span>/7</div>
+                            <div class="db-icons">
+                                <div class="db-icon">⭐</div>
+                                <div class="db-icon">⭐</div>
+                                <div class="db-icon">⭐</div>
+                                <div class="db-icon">⭐</div>
+                                <div class="db-icon">⭐</div>
+                                <div class="db-icon">⭐</div>
+                                <div class="db-icon">⭐</div>
+                            </div>
+                        </div>
+                        <button id="menu-btn" class="hud-btn">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
             
-            <div class="ki-bar">
-                <div class="ki-fill" id="ki-fill"></div>
-                <span class="ki-text" id="ki-text">100/100</span>
-            </div>
-            
-            <div class="power-display">
-                <i class="fas fa-bolt"></i>
-                <span id="power-level">1,000</span>
-            </div>
-        </div>
-        
-        <div class="enemy-hud hidden" id="enemy-hud">
-            <div class="enemy-name" id="enemy-name">ENEMY</div>
-            <div class="enemy-health">
-                <div class="enemy-health-fill" id="enemy-health"></div>
-            </div>
-        </div>
-        
-        <div class="mobile-controls hidden" id="mobile-controls">
-            <div class="d-pad">
-                <button class="move-btn up" id="btn-up">↑</button>
-                <button class="move-btn down" id="btn-down">↓</button>
-                <button class="move-btn left" id="btn-left">←</button>
-                <button class="move-btn right" id="btn-right">→</button>
-            </div>
-            <div class="action-buttons">
-                <button class="action-btn" id="btn-charge">CHARGE</button>
-                <button class="action-btn" id="btn-attack">ATTACK</button>
-                <button class="action-btn" id="btn-transform">TRANSFORM</button>
-            </div>
-        </div>
-        
-        <button id="pause-btn" class="pause-btn">
-            <i class="fas fa-pause"></i>
-        </button>
-    </div>
-    
-    <!-- Game Over Screen -->
-    <div id="gameover-screen" class="screen">
-        <div class="gameover-container">
-            <h1><i class="fas fa-skull"></i> GAME OVER</h1>
-            <div class="final-stats">
-                <div class="final-stat">
-                    <span>Power Level:</span>
-                    <span id="final-power">0</span>
-                </div>
-                <div class="final-stat">
-                    <span>Enemies Defeated:</span>
-                    <span id="final-enemies">0</span>
-                </div>
-                <div class="final-stat">
-                    <span>Time Survived:</span>
-                    <span id="final-time">0:00</span>
+            <!-- Combat Log -->
+            <div id="combat-log">
+                <div class="log-header">COMBAT LOG</div>
+                <div class="log-content" id="log-content">
+                    <div>Welcome to Dragon Ball: Beyond Legacy!</div>
+                    <div>Explore the world, fight enemies, and collect Dragon Balls!</div>
                 </div>
             </div>
-            <button id="restart-btn" class="start-btn">
-                <i class="fas fa-redo"></i> PLAY AGAIN
-            </button>
+        </div>
+
+        <!-- Pause Menu -->
+        <div id="pause-menu" class="screen hidden">
+            <div class="menu-container">
+                <h2>GAME MENU</h2>
+                <div class="menu-player-info">
+                    <div><strong>Name:</strong> <span id="menu-name"></span></div>
+                    <div><strong>Class:</strong> <span id="menu-class"></span></div>
+                    <div><strong>Power Level:</strong> <span id="menu-power"></span></div>
+                </div>
+                <div class="menu-options">
+                    <button class="menu-btn" id="resume-btn">
+                        <i class="fas fa-play"></i> Resume Game
+                    </button>
+                    <button class="menu-btn" id="restart-btn">
+                        <i class="fas fa-redo"></i> Restart Game
+                    </button>
+                    <button class="menu-btn" id="controls-btn">
+                        <i class="fas fa-gamepad"></i> Controls
+                    </button>
+                    <button class="menu-btn" id="about-btn">
+                        <i class="fas fa-info-circle"></i> About
+                    </button>
+                </div>
+                <div class="menu-footer">
+                    <button class="menu-btn exit-btn" id="return-btn">
+                        <i class="fas fa-home"></i> Return to Start
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Info -->
+        <div id="controls-screen" class="screen hidden">
+            <div class="menu-container">
+                <h2>CONTROLS</h2>
+                <div class="controls-list">
+                    <div class="control-item">
+                        <span class="control-key">W / ↑</span>
+                        <span class="control-desc">Move Up</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-key">A / ←</span>
+                        <span class="control-desc">Move Left</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-key">S / ↓</span>
+                        <span class="control-desc">Move Down</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-key">D / →</span>
+                        <span class="control-desc">Move Right</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-key">SPACE</span>
+                        <span class="control-desc">Interact / Attack</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-key">F / ⚡ Button</span>
+                        <span class="control-desc">Fire Ki Blast</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-key">C / 💥 Button</span>
+                        <span class="control-desc">Charge Ki</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-key">R / 🪽 Button</span>
+                        <span class="control-desc">Toggle Flight</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-key">ESC / MENU</span>
+                        <span class="control-desc">Pause Game</span>
+                    </div>
+                </div>
+                <button class="menu-btn back-btn" id="back-from-controls">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+        </div>
+
+        <!-- About Screen -->
+        <div id="about-screen" class="screen hidden">
+            <div class="menu-container">
+                <h2>ABOUT</h2>
+                <div class="about-content">
+                    <h3>Dragon Ball: Beyond Legacy</h3>
+                    <p>A 2D tile-based Dragon Ball inspired game built with HTML5, CSS3, and JavaScript.</p>
+                    <p>Features:</p>
+                    <ul>
+                        <li>Choose from 3 unique classes</li>
+                        <li>Explore a tile-based world</li>
+                        <li>Battle enemies and power up</li>
+                        <li>Collect all 7 Dragon Balls</li>
+                        <li>Full mobile and desktop support</li>
+                    </ul>
+                    <p>Created as a tribute to Dragon Ball and classic tile-based RPGs.</p>
+                    <p class="github-note">
+                        <i class="fab fa-github"></i> 
+                        GitHub Compatible - Clone and customize!
+                    </p>
+                </div>
+                <button class="menu-btn back-btn" id="back-from-about">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
         </div>
     </div>
 
